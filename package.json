@@ -1,0 +1,40 @@
+{
+  "name": "nodetalk",
+  "version": "0.0.1",
+  "description": "making chat room project for practice using Socket.IO",
+  "main": "app.js",
+  "scripts": {
+    "start": "cross-env NODE_ENV=production PORT=8002 pm2 start app.js -i 1 --name 'NodeBook'",
+    "dev": "nodemon app"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ASSSSN/nodetalk.git"
+  },
+  "author": "ASSN2",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ASSSSN/nodetalk/issues"
+  },
+  "homepage": "https://github.com/ASSSSN/nodetalk#readme",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "color-hash": "^1.0.3",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "helmet": "^3.22.0",
+    "hpp": "^0.2.3",
+    "mongoose": "^5.9.10",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.2",
+    "pm2": "^4.4.0",
+    "pug": "^2.0.4",
+    "socket.io": "^2.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.3"
+  }
+}
