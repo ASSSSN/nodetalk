@@ -1,0 +1,59 @@
+extends layout
+
+block content
+  h1= title
+  a#exit-btn(href='/') 방 나가기
+  fieldset
+    legend 채팅 내용
+    #chat-list
+      for chat in chats
+        //- 내 메세지, 다른유저 메세지, 시스템 메세지로 구분, 구분에 따라 디자인 달라짐.
+        if chat.user === user
+          .mine(style='color:' + chat.user)
+            div= chat.user
+            if chat.gif
+              img(src='/gif/' + chat.gif)
+            else
+              div= chat.chat
+        else if chat.user === 'system'
+          .system
+            div= chat.chat
+        else
+          .other(style='color:' + chat.user)
+            div= chat.user
+            if chat.gif
+              img(src='/gif/' + chat.gif)
+            else
+              div= chat.chat
+  form#chat-form(action='/chat' method='post' enctype='multipart/form-data')
+    label(for='gif') GIF 올리기
+    input#gif(type='file' name='gif' accept='image/gif')
+    input#chat(name='chat')
+    button(type='submit') 전송
+
+  script(src='/socket.io/socket.io.js')
+  script.
+    // io연결, chat 네임 스페이스로 보낸 데이터만 받을 수 있다.
+    var socket = io.connect('http://localhost:8005/chat', {
+      path: '/socket.io'
+    });
+
+
+    socket.on('join', function (data) {
+      var div = document.createElement('div');
+      div.classList.add('system');
+      var chat = document.createElement('div');
+      div.textContent = data.chat;
+      div.appendChild(chat);
+      document.querySelector('#chat-list').appendChild(div);
+    });
+
+
+    socket.on('exit', function (data) {
+      var div = document.createElement('div');
+      div.classList.add('system');
+      var chat = document.createElement('div');
+      div.textContent = data.chat;
+      div.appendChild(chat);
+      document.querySelector('#chat-list').appendChild(div);
+    });
