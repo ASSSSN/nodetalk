@@ -39,7 +39,7 @@ block content
     });
 
 
-    socket.on('join', function (data) {
+    socket.on('join', (data) => {
       var div = document.createElement('div');
       div.classList.add('system');
       var chat = document.createElement('div');
@@ -49,7 +49,7 @@ block content
     });
 
 
-    socket.on('exit', function (data) {
+    socket.on('exit', (data) => {
       var div = document.createElement('div');
       div.classList.add('system');
       var chat = document.createElement('div');
@@ -57,3 +57,26 @@ block content
       div.appendChild(chat);
       document.querySelector('#chat-list').appendChild(div);
     });
+
+    socket.on('chat', (data) => {
+      const div = document.createElemet('div');
+      data.user === '#{user}' ? div.classList.add('mine') : div.classList.add('other');
+
+      const name = document.createElement('dev');
+      name.textContent = data.chat;
+      div.appendChild(chat);
+
+      data.chat ? (
+        const chat = document.createElement('div'),
+        chat.textContent = data.chat,
+        div.appendChild(chat)
+      ) : (
+        const gif = document.createElement('img'),
+        gif.src = '/gif/' + data.gif,
+        div.appendChild(gif)
+      );
+      div.style.color = data.user;
+      document.querySelector('#chat-list').appendChild(div);
+    });
+
+    
