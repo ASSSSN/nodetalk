@@ -4,6 +4,7 @@ const GetMakeRoom = '/room';
 const PostRoom = '/room';
 const GetRoom = '/room/:id';
 const DeleteRoom = '/room/:id';
+const PostChat = '/room/:id/chat';
 
 const urls = {
     home: Home,
@@ -16,7 +17,10 @@ const urls = {
     },
     deleteroom: (id) => {
         return id ? `/room/${id}` : DeleteRoom;
-    }
+    },
+    postchat: (id) => {
+        return id ? `/room/${id}/chat` : PostChat;
+    },
 };
 
 module.exports = urls;

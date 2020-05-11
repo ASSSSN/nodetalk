@@ -1,18 +1,18 @@
 const express = require('express');
-const cookieParser = require('cookie-parser');
-const morgan = require('morgan');
 const path = require('path');
+const morgan = require('morgan');
+const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const flash = require('connect-flash');
 const ColorHash = require('color-hash');
 require('dotenv').config();
 const helmet = require('helmet');
 const hpp = require('hpp');
-const connect = require('./schemas');
 
 const webSocket = require('./socket');
 const urls = require('./urls');
 const indexRouter = require('./routes');
+const connect = require('./schemas');
 
 const app = express();
 connect();
@@ -37,20 +37,11 @@ process.env.NODE_ENV === 'production' ? (
     app.use(helmet()),      // 헤더 설정 변경, 웹 취약성 보완
     app.use(hpp())          // http parameter pollution attack 방지
  ) : app.use(morgan('dev'));
-
 app.use(express.static(path.join(__dirname, 'static')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
-app.use(session({
-    resave: false,
-    saveUninitialized: false,
-    secret: process.env.COOKIE_SECRET,
-    cookie: {
-        httpOnly: true,
-        secure: false,
-    },
-}));
+app.use(sessionMiddleware);
 app.use(flash());
 
 // 세션에 컬러값이 없으면 새로 부여

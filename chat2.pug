@@ -7,7 +7,6 @@ block content
     legend 채팅 내용
     #chat-list
       for chat in chats
-        //- 내 메세지, 다른유저 메세지, 시스템 메세지로 구분, 구분에 따라 디자인 달라짐.
         if chat.user === user
           .mine(style='color:' + chat.user)
             div= chat.user
@@ -32,13 +31,10 @@ block content
     button(type='submit') 전송
   script(src='/socket.io/socket.io.js')
   script.
-    // io연결, chat 네임 스페이스로 보낸 데이터만 받을 수 있다.
-    var socket = io.connect('http://localhost:8002/chat', {
+    var socket = io.connect('http://localhost:8005/chat', {
       path: '/socket.io'
     });
-
-
-    socket.on('join', (data) => {
+    socket.on('join', function (data) {
       var div = document.createElement('div');
       div.classList.add('system');
       var chat = document.createElement('div');
@@ -46,9 +42,7 @@ block content
       div.appendChild(chat);
       document.querySelector('#chat-list').appendChild(div);
     });
-
-
-    socket.on('exit', (data) => {
+    socket.on('exit', function (data) {
       var div = document.createElement('div');
       div.classList.add('system');
       var chat = document.createElement('div');
@@ -56,15 +50,16 @@ block content
       div.appendChild(chat);
       document.querySelector('#chat-list').appendChild(div);
     });
-
-    socket.on('chat', (data) => {
-      const div = document.createElement('div');
-      data.user === '#{user}' ? div.classList.add('mine') : div.classList.add('other');
-
-      const name = document.createElement('div');
-      name.textContent = data.chat;
+    socket.on('chat', function (data) {
+      var div = document.createElement('div');
+      if (data.user === '#{user}') {
+        div.classList.add('mine');
+      } else {
+        div.classList.add('other');
+      }
+      var name = document.createElement('div');
+      name.textContent = data.user;
       div.appendChild(name);
-
       if (data.chat) {
         var chat = document.createElement('div');
         chat.textContent = data.chat;
@@ -74,22 +69,22 @@ block content
         gif.src = '/gif/' + data.gif;
         div.appendChild(gif);
       }
-
       div.style.color = data.user;
       document.querySelector('#chat-list').appendChild(div);
     });
-
-    // 채팅 전송
-    document.querySelector('#chat-form').addEventListener('submit', (e) => {
+    document.querySelector('#chat-form').addEventListener('submit', function (e) {
       e.preventDefault();
       if (e.target.chat.value) {
-        const xhr = new XMLHttpRequest();
-        xhr.onload = () => {
-          xhr.status === 200 ? e.target.chat.value = '' : console.error(xhr.responseText);
+        var xhr = new XMLHttpRequest();
+        xhr.onload = function () {
+          if (xhr.status === 200) {
+            e.target.chat.value = '';
+          } else {
+            console.error(xhr.responseText);
+          }
         };
         xhr.open('POST', '/room/#{room._id}/chat');
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.send(JSON.stringify({ chat: this.chat.value }));
       }
     });
-    

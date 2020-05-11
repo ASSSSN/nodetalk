@@ -40,7 +40,6 @@ router.post(urls.postroom, async (req, res, next) => {
 
 router.get(urls.getroom(), async(req, res, next) => {
     try {
-        console.log('called');
         const room = await Room.findOne({ _id: req.params.id });
         const io = req.app.get('io');
         
@@ -59,10 +58,12 @@ router.get(urls.getroom(), async(req, res, next) => {
             return res.redirect('/');
         }
 
+        const chats = await Chat.find({ room: room._id }).sort('createdAt');
+
         return res.render('chat', {
             room,
             title: room.title,
-            chats: [],
+            chats,
             user: req.session.color,
             urls,
         });
@@ -80,6 +81,25 @@ router.delete(urls.deleteroom(), async (req, res, next) => {
         setTimeout(() => {
             req,app.get('io').of('/room').emit('removeRoom', req.params.id);
         }, 2000);
+    } catch (error) {
+        console.error(error);
+        next(error);
+    }
+});
+
+router.post(urls.postchat(), async (req, res, next) => {
+    try {
+        const chat = new Chat({
+            room: req.params.id,
+            user: req.session.color,
+            chat: req.body.chat,
+        });
+        await chat.save();
+
+        // to(방 아이디).emit('chat')로 같은 방 소켓들에게 메시지 데이터를 전송한다.
+        req.app.get('io').of('/chat').to(req.params.id).emit('chat', chat);
+        
+        res.send('ok');
     } catch (error) {
         console.error(error);
         next(error);
