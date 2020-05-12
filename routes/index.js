@@ -2,108 +2,24 @@ const express = require('express');
 
 const Room = require('../schemas/room');
 const Chat = require('../schemas/chat');
-const urls = require('../urls');
+const URLs = require('../urls');
+const RoomCallBack = require('./room');
+const ChatCallBack = require('./chat');
 
 const router = express.Router();
+ 
+// Room
+router.get(URLs.mainroom, (req, res, next) => RoomCallBack.mainRoom(req, res, next, URLs, Room));
 
-router.get(urls.mainroom, async (req, res, next) => {
-    try {
-        const rooms = await Room.find({});
-        res.render('main', { rooms, title: 'NodeTalk!!', error: req.flash('roomError'), urls });
-    } catch (error) {
-        console.error(error);
-        next(error);
-    }
-});
+router.get(URLs.getmakeroom, (req, res) => RoomCallBack.makeMainRoom(req, res));
 
-router.get(urls.getmakeroom, (req, res) => {
-    res.render('room', { title: '채팅방 생성', urls });
-});
+router.post(URLs.postroom, (req, res, next) => RoomCallBack.postRoom(req, res, next, Room));
 
-router.post(urls.postroom, async (req, res, next) => {
-    try {
-        const room = new Room({
-            title: req.body.title,
-            max: req.body.max,
-            owner: req.session.color,
-            password: req.body.password,
-        });
-        const newRoom = await room.save();
-        const io = req.app.get('io');
-        io.of('/room').emit('newRoom', newRoom);
-        res.redirect(`/room/${newRoom._id}?password=${req.body.password}`);
-    } catch (error) {
-        console.error(error);
-        next(error);
-    }
-});
+router.get(URLs.getroom(), (req, res, next) => RoomCallBack.getRoom(req, res, next, URLs, Room, Chat));
 
-router.get(urls.getroom(), async(req, res, next) => {
-    try {
-        const room = await Room.findOne({ _id: req.params.id });
-        const io = req.app.get('io');
-        
-        if (!room) {
-            req.flash('roomError', '존재하지 않는 방입니다.');
-            return res.redirect('/');
-        }
-        if (room.password && room.password !== req.query.password) {
-            req.flash('roomError', '비밀번호가 틀렸습니다.');
-            return res.redirect('/');
-        }
+router.delete(URLs.deleteroom(), (req, res, next) => RoomCallBack.deleteRoom(req, res, next, URLs, Room, Chat));
 
-        const { rooms } = io.of('/chat').adapter;
-        if (rooms && rooms[req.params.id] && room.max <= rooms[req.params.id].length) {
-            req.flash('roomError', '허용 인원이 초과하였습니다.');
-            return res.redirect('/');
-        }
-
-        const chats = await Chat.find({ room: room._id }).sort('createdAt');
-
-        return res.render('chat', {
-            room,
-            title: room.title,
-            chats,
-            user: req.session.color,
-            urls,
-        });
-    } catch (error) {
-        console.error(error);
-        next(error);
-    }
-});
-
-router.delete(urls.deleteroom(), async (req, res, next) => {
-    try {
-        await Room.remove({ _id: req.params.id });
-        await Chat.remove({ room: req.params.id });
-        res.redirect(urls.mainroom);
-        setTimeout(() => {
-            req.app.get('io').of('/room').emit('removeRoom', req.params.id);
-        }, 500);
-    } catch (error) {
-        console.error(error);
-        next(error);
-    }
-});
-
-router.post(urls.postchat(), async (req, res, next) => {
-    try {
-        const chat = new Chat({
-            room: req.params.id,
-            user: req.session.color,
-            chat: req.body.chat,
-        });
-        await chat.save();
-
-        // to(방 아이디).emit('chat')로 같은 방 소켓들에게 메시지 데이터를 전송한다.
-        req.app.get('io').of('/chat').to(req.params.id).emit('chat', chat);
-        
-        res.send('ok');
-    } catch (error) {
-        console.error(error);
-        next(error);
-    }
-});
+// Chat
+router.post(URLs.postchat(), (req, res, next) => ChatCallBack.postChat(req, res, next, Chat));
 
 module.exports = router;

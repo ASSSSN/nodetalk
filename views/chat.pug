@@ -37,7 +37,6 @@ block content
       path: '/socket.io'
     });
 
-
     socket.on('join', (data) => {
       var div = document.createElement('div');
       div.classList.add('system');
@@ -62,7 +61,7 @@ block content
       data.user === '#{user}' ? div.classList.add('mine') : div.classList.add('other');
 
       const name = document.createElement('div');
-      name.textContent = data.chat;
+      name.textContent = data.user;
       div.appendChild(name);
 
       if (data.chat) {
