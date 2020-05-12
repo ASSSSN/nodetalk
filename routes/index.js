@@ -77,10 +77,10 @@ router.delete(urls.deleteroom(), async (req, res, next) => {
     try {
         await Room.remove({ _id: req.params.id });
         await Chat.remove({ room: req.params.id });
-        res.send('ok');
+        res.redirect(urls.mainroom);
         setTimeout(() => {
-            req,app.get('io').of('/room').emit('removeRoom', req.params.id);
-        }, 2000);
+            req.app.get('io').of('/room').emit('removeRoom', req.params.id);
+        }, 500);
     } catch (error) {
         console.error(error);
         next(error);

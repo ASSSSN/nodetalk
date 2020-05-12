@@ -44,11 +44,11 @@ module.exports = (server, app, sessionMiddleware) => {
         socket.on('disconnect', async () => {
             console.log('chat 네임스페이스 접속 해제');
             socket.leave(roomId);
-            const currentRoom = socket.adapter.room[roomId];
+            const currentRoom = socket.adapter.rooms[roomId];
             const userCount = currentRoom ? currentRoom.length : 0;
             if(userCount === 0) {
                 try {
-                    await axios.delete(`http://localhost:8005/room/${roomId}`);
+                    await axios.delete(`http://localhost:8002/room/${roomId}`);
                     console.log('방 제거 요청 성공');
                 } catch (error) {
                     console.error(error);

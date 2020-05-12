@@ -44,7 +44,7 @@ app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(sessionMiddleware);
 app.use(flash());
 
-// 세션에 컬러값이 없으면 새로 부여
+//세션에 컬러값이 없으면 새로 부여
 app.use((req, res, next) => {
     if (!req.session.color) {
         const colorHash = new ColorHash();
@@ -52,6 +52,7 @@ app.use((req, res, next) => {
     }
     next();
 });
+
 
 app.use(urls.home, indexRouter);
 
