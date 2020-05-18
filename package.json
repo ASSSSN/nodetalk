@@ -4,7 +4,7 @@
   "description": "making chat room project for practice using Socket.IO",
   "main": "app.js",
   "scripts": {
-    "start": "cross-env NODE_ENV=production PORT=8002 pm2 start app.js -i 1 --name 'NodeBook'",
+    "start": "cross-env NODE_ENV=production PORT=8001 pm2 start app.js -i 1 --name 'NodeBook'",
     "dev": "nodemon app"
   },
   "repository": {
