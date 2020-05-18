@@ -92,3 +92,14 @@ block content
       }
     });
     
+    // 사진 전송
+    document.querySelector('#gif').addEventListener('change', (e) => {
+      const formData = new FormData();
+      const xhr = new XMLHttpRequest();
+      formData.append('gif', e.target.files[0]);
+      xhr.onload = () => {
+        xhr.status === 200 ? e.target.file = null : console.error(xhr.responseText);
+      };
+      xhr.open('POST', '/room/#{room._id}/gif');
+      xhr.send(formData);
+    });

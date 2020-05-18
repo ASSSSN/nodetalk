@@ -5,6 +5,7 @@ const PostRoom = '/room';
 const GetRoom = '/room/:id';
 const DeleteRoom = '/room/:id';
 const PostChat = '/room/:id/chat';
+const PostGif = '/room/:id/gif';
 
 const urls = {
     home: Home,
@@ -20,6 +21,9 @@ const urls = {
     },
     postchat: (id) => {
         return id ? `/room/${id}/chat` : PostChat;
+    },
+    postgif: (id) => {
+        return id ? `/room/${id}/gif` : PostGif;
     },
 };
 

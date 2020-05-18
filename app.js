@@ -38,6 +38,7 @@ process.env.NODE_ENV === 'production' ? (
     app.use(hpp())          // http parameter pollution attack 방지
  ) : app.use(morgan('dev'));
 app.use(express.static(path.join(__dirname, 'static')));
+app.use('/gif', express.static(path.join(__dirname, 'uploads')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(process.env.COOKIE_SECRET));

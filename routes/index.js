@@ -1,10 +1,14 @@
 const express = require('express');
+const multer = require('multer');
+const path  = require('path');
+const fs = require('fs');
 
 const Room = require('../schemas/room');
 const Chat = require('../schemas/chat');
 const URLs = require('../urls');
 const RoomCallBack = require('./room');
 const ChatCallBack = require('./chat');
+const middleware = require('./middleware');
 
 const router = express.Router();
  
@@ -21,5 +25,13 @@ router.delete(URLs.deleteroom(), (req, res, next) => RoomCallBack.deleteRoom(req
 
 // Chat
 router.post(URLs.postchat(), (req, res, next) => ChatCallBack.postChat(req, res, next, Chat));
+
+// check uploads
+middleware.checkUploads(fs);
+
+// make multer
+const upload = middleware.makeMulter(multer, path);
+
+router.post(URLs.postgif(), upload.single('gif'), (req, res, next) => ChatCallBack.postGif(req, res, next, Chat));
 
 module.exports = router;
